@@ -1,9 +1,9 @@
 <?php
 
 //Database Constants
-define("DB_NAME", "budget_tracker_db");
-define("DB_USER", "johnny");
-define("DB_PASSWORD", "JohnUnity0216$#@!");
+define("DB_NAME", "db");
+define("DB_USER", "user_name");
+define("DB_PASSWORD", "xxxxx");
 define("DB_HOST", "localhost");
 //
 ////Database connection
