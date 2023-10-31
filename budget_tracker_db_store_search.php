@@ -10,9 +10,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $dateFrom = mysqli_real_escape_string($db, $_POST['date_from']);
         $dateTo = mysqli_real_escape_string($db, $_POST['date_to']);
         $result = displayStoreNameList($email, $storeName, $dateFrom, $dateTo);
-        if (mysqli_num_rows($result) > 0) {
+        if ($result !== false && mysqli_num_rows($result) > 0) {
             $response['success'] = 1;
-            $response['success'] = 1;
+            $response['result'] = array();
+
+            while ($row = mysqli_fetch_assoc($result)) {
+                $response['result'][] = $row;
+            }
         } else {
             $response['success'] = 0;
         }
@@ -24,3 +28,4 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 }
 
 echo json_encode($response);
+
