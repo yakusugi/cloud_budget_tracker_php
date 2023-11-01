@@ -90,6 +90,49 @@ function displayStoreNameList($email, $storeName, $dateFrom, $dateTo) {
     return $result;
 }
 
+function displayProductNameList($email, $productName, $dateFrom, $dateTo) {
+    global $db;
+
+    //SQL select query
+    $sql = "SELECT spending_date, store_name, product_name, product_type, vat_rate,  price, note, currency_code, quantity
+    FROM user_spending
+    WHERE email = '$email'
+      AND product_name LIKE '%$productName%'
+      AND spending_date BETWEEN '$dateFrom' AND '$dateTo'";
+
+    //Attempt to open the log file for writing
+    $logFilePath = "/var/log/api_error_log/query.log";
+    $file = fopen($logFilePath, "w");
+
+    if ($file === false) {
+        error_log("Failed to open log file for writing: $logFilePath");
+        return false; // Return an error indicator
+    }
+
+    // Write the SQL query to the file
+    $writeResult = fwrite($file, $sql);
+
+    if ($writeResult === false) {
+        error_log("Failed to write SQL query to log file: $logFilePath");
+        fclose($file);
+        return false; // Return an error indicator
+    }
+
+    // Close the file
+    fclose($file);
+
+    // If writing was successful, execute the SQL query
+    $result = mysqli_query($db, $sql);
+
+    if ($result === false) {
+        error_log("Failed to execute SQL query: " . mysqli_error($db));
+    }
+
+    return $result;
+}
+
+
+
 
 // function deleteData($id) {
 //     //Global Variable
