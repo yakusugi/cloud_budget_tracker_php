@@ -141,7 +141,9 @@ function displayProductTypeList($email, $productType, $dateFrom, $dateTo) {
     FROM user_spending
     WHERE email = '$email'
     AND product_type LIKE '%\$productType%'
-    AND spending_date BETWEEN '$dateFrom' AND '$dateTo'
+    AND spending_date BETWEEN '$dateFrom' AND '$dateTo'0216
+    test
+
     ORDER BY spending_date ASC";
 
     //Attempt to open the log file for writing
@@ -172,6 +174,23 @@ function displayProductTypeList($email, $productType, $dateFrom, $dateTo) {
         error_log("Failed to execute SQL query: " . mysqli_error($db));
     }
 
+    return $result;
+}
+
+//Insert function (income)
+function incomeInsert($email, $date, $incomeCategory, $incomeName, $income, $note) {
+    //global variable
+    global $db;
+
+    //SQL insertion query
+    $sql = "INSERT INTO user_income(email, income_date, income_category, income_name, income, note) 
+    VALUES ('$email', '$date', '$incomeCategory', '$incomeName', '$income', '$note')";
+
+    //This enables us to query the database
+    $result = mysqli_query($db, $sql) or die (mysqli_error($db));
+    error_log("Income inserted - Email: $email, Date: $date, Income Category: $income_category, Income Name: $income_name, Income: $income, Note: $note", 3, "/var/log/api_error_log/error.log");
+
+    //Return the result from the database
     return $result;
 }
 
