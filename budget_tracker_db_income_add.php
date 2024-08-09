@@ -1,6 +1,6 @@
 <?php
 
-require_once "budget_tracker_db_function.php";
+require_once "budget_tracker_db_income_function.php";
 
 // Let's initialize the response here and set it to an array
 $response = array();

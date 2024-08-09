@@ -33,17 +33,17 @@ function loginToTheSystem($email, $password) {
 }
 
 //Insert function (spending)
-function spendingInsert($email, $date, $storeName, $productName, $productType, $vatRate, $price, $note) {
+function spendingInsert($email, $date, $storeName, $productName, $productType, $vatRate, $price, $note, $currencyCode) {
     //global variable
     global $db;
 
     //SQL insertion query
-    $sql = "INSERT INTO user_spending(email, spending_date, store_name, product_name, product_type, vat_rate, price, note) 
-    VALUES ('$email', '$date', '$storeName', '$productName', '$productType', '$vatRate', '$price', '$note')";
+    $sql = "INSERT INTO user_spending(email, spending_date, store_name, product_name, product_type, vat_rate, price, note, currency_code) 
+    VALUES ('$email', '$date', '$storeName', '$productName', '$productType', '$vatRate', '$price', '$note', '$currencyCode')";
 
     //This enables us to query the database
     $result = mysqli_query($db, $sql) or die (mysqli_error($db));
-    error_log("Spending inserted - Email: $email, Date: $date, Store Name: $store_name, Product Name: $product_name, Product Type: $product_type, VAT Rate: $vat_rate, Price: $price, Note: $note", 3, "/var/log/api_error_log/error.log");
+    error_log("Spending inserted - Email: $email, Date: $date, Store Name: $store_name, Product Name: $product_name, Product Type: $product_type, VAT Rate: $vat_rate, Price: $price, Note: $note, Currency Code: $currency_code", 3, "/var/log/api_error_log/error.log");
 
     //Return the result from the database
     return $result;
@@ -59,6 +59,86 @@ function displayStoreNameList($email, $storeName, $dateFrom, $dateTo) {
       AND store_name = '$storeName'
       AND spending_date BETWEEN '$dateFrom' AND '$dateTo'
     ORDER BY spending_date ASC";
+
+    //Attempt to open the log file for writing
+    $logFilePath = "/var/log/api_error_log/query.log";
+    $file = fopen($logFilePath, "w");
+
+    if ($file === false) {
+        error_log("Failed to open log file for writing: $logFilePath");
+        return false; // Return an error indicator
+    }
+
+    // Write the SQL query to the file
+    $writeResult = fwrite($file, $sql);
+
+    if ($writeResult === false) {
+        error_log("Failed to write SQL query to log file: $logFilePath");
+        fclose($file);
+        return false; // Return an error indicator
+    }
+
+    // Close the file
+    fclose($file);
+
+    // If writing was successful, execute the SQL query
+    $result = mysqli_query($db, $sql);
+
+    if ($result === false) {
+        error_log("Failed to execute SQL query: " . mysqli_error($db));
+    }
+
+    return $result;
+}
+
+function displayStoreNameSum($email, $storeName, $dateFrom, $dateTo) {
+    global $db;
+
+    //SQL select query
+    $sql = "SELECT SUM(price) AS total_sum
+    FROM user_spending
+    WHERE spending_date BETWEEN '$dateFrom' AND '$dateTo'
+    AND store_name = '$storeName'";
+
+    //Attempt to open the log file for writing
+    $logFilePath = "/var/log/api_error_log/query.log";
+    $file = fopen($logFilePath, "w");
+
+    if ($file === false) {
+        error_log("Failed to open log file for writing: $logFilePath");
+        return false; // Return an error indicator
+    }
+
+    // Write the SQL query to the file
+    $writeResult = fwrite($file, $sql);
+
+    if ($writeResult === false) {
+        error_log("Failed to write SQL query to log file: $logFilePath");
+        fclose($file);
+        return false; // Return an error indicator
+    }
+
+    // Close the file
+    fclose($file);
+
+    // If writing was successful, execute the SQL query
+    $result = mysqli_query($db, $sql);
+
+    if ($result === false) {
+        error_log("Failed to execute SQL query: " . mysqli_error($db));
+    }
+
+    return $result;
+}
+
+function displayDateSum($email, $currencyCode, $dateFrom, $dateTo) {
+    global $db;
+
+    //SQL select query
+    $sql = "SELECT SUM(price) AS total_sum
+    FROM user_spending
+    WHERE spending_date BETWEEN '$dateFrom' AND '$dateTo'
+    AND currency_code = '$currencyCode'";
 
     //Attempt to open the log file for writing
     $logFilePath = "/var/log/api_error_log/query.log";
@@ -133,6 +213,46 @@ function displayProductNameList($email, $productName, $dateFrom, $dateTo) {
     return $result;
 }
 
+function displayProductNameSum($email, $productName, $dateFrom, $dateTo) {
+    global $db;
+
+    //SQL select query
+    $sql = "SELECT SUM(price) AS total_sum
+    FROM user_spending
+    WHERE spending_date BETWEEN '$dateFrom' AND '$dateTo'
+    AND product_name LIKE '%$productName%'";
+
+    //Attempt to open the log file for writing
+    $logFilePath = "/var/log/api_error_log/query.log";
+    $file = fopen($logFilePath, "w");
+
+    if ($file === false) {
+        error_log("Failed to open log file for writing: $logFilePath");
+        return false; // Return an error indicator
+    }
+
+    // Write the SQL query to the file
+    $writeResult = fwrite($file, $sql);
+
+    if ($writeResult === false) {
+        error_log("Failed to write SQL query to log file: $logFilePath");
+        fclose($file);
+        return false; // Return an error indicator
+    }
+
+    // Close the file
+    fclose($file);
+
+    // If writing was successful, execute the SQL query
+    $result = mysqli_query($db, $sql);
+
+    if ($result === false) {
+        error_log("Failed to execute SQL query: " . mysqli_error($db));
+    }
+
+    return $result;
+}
+
 function displayProductTypeList($email, $productType, $dateFrom, $dateTo) {
     global $db;
 
@@ -140,10 +260,90 @@ function displayProductTypeList($email, $productType, $dateFrom, $dateTo) {
     $sql = "SELECT spending_date, store_name, product_name, product_type, vat_rate, price, note, currency_code, quantity
     FROM user_spending
     WHERE email = '$email'
-    AND product_type LIKE '%\$productType%'
-    AND spending_date BETWEEN '$dateFrom' AND '$dateTo'0216
-    test
+    AND product_type LIKE '%$productType%'
+    AND spending_date BETWEEN '$dateFrom' AND '$dateTo'
+    ORDER BY spending_date ASC";
 
+    //Attempt to open the log file for writing
+    $logFilePath = "/var/log/api_error_log/query.log";
+    $file = fopen($logFilePath, "w");
+
+    if ($file === false) {
+        error_log("Failed to open log file for writing: $logFilePath");
+        return false; // Return an error indicator
+    }
+
+    // Write the SQL query to the file
+    $writeResult = fwrite($file, $sql);
+
+    if ($writeResult === false) {
+        error_log("Failed to write SQL query to log file: $logFilePath");
+        fclose($file);
+        return false; // Return an error indicator
+    }
+
+    // Close the file
+    fclose($file);
+
+    // If writing was successful, execute the SQL query
+    $result = mysqli_query($db, $sql);
+
+    if ($result === false) {
+        error_log("Failed to execute SQL query: " . mysqli_error($db));
+    }
+
+    return $result;
+}
+
+function displayProductTypeSum($email, $productType, $dateFrom, $dateTo) {
+    global $db;
+
+    //SQL select query
+    $sql = "SELECT SUM(price) AS total_sum
+    FROM user_spending
+    WHERE spending_date BETWEEN '$dateFrom' AND '$dateTo'
+    AND product_type LIKE '%$productType%'";
+
+    //Attempt to open the log file for writing
+    $logFilePath = "/var/log/api_error_log/query.log";
+    $file = fopen($logFilePath, "w");
+
+    if ($file === false) {
+        error_log("Failed to open log file for writing: $logFilePath");
+        return false; // Return an error indicator
+    }
+
+    // Write the SQL query to the file
+    $writeResult = fwrite($file, $sql);
+
+    if ($writeResult === false) {
+        error_log("Failed to write SQL query to log file: $logFilePath");
+        fclose($file);
+        return false; // Return an error indicator
+    }
+
+    // Close the file
+    fclose($file);
+
+    // If writing was successful, execute the SQL query
+    $result = mysqli_query($db, $sql);
+
+    if ($result === false) {
+        error_log("Failed to execute SQL query: " . mysqli_error($db));
+    }
+
+    return $result;
+}
+
+function displayDateList($email, $currencyCode, $dateFrom, $dateTo) {
+    global $db;
+
+    //SQL select query
+    $sql = "SELECT spending_date, store_name, product_name, product_type, vat_rate, price, note, currency_code, quantity
+    FROM user_spending
+    WHERE email = '$email'
+      AND currency_code = '$currencyCode'
+      AND spending_date BETWEEN '$dateFrom' AND '$dateTo'
     ORDER BY spending_date ASC";
 
     //Attempt to open the log file for writing
@@ -193,6 +393,7 @@ function incomeInsert($email, $date, $incomeCategory, $incomeName, $income, $not
     //Return the result from the database
     return $result;
 }
+
 
 
 

@@ -18,7 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         isset($_POST['product_type']) &&
         isset($_POST['vat_rate']) &&
         isset($_POST['price']) &&
-        isset($_POST['note'])
+        isset($_POST['note']) &&
+        isset($_POST['currency_code'])
     ) {
         // Define the variables
         $email = $_POST['email'];
@@ -29,9 +30,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         $vatRate = $_POST['vat_rate'];
         $price = $_POST['price'];
         $note = $_POST['note'];
+        $currencyCode = $_POST['currency_code'];
 
         // Now call the insertData function from db_function.php
-        $result = spendingInsert($email, $date, $storeName, $productName, $productType, $vatRate, $price, $note);
+        $result = spendingInsert($email, $date, $storeName, $productName, $productType, $vatRate, $price, $note, $currencyCode);
 
         // If the result variable returns true, then insert the user into the table in the database.
         if ($result) {

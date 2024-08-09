@@ -74,6 +74,56 @@ function displayStoreNameList($email, $storeName, $dateFrom, $dateTo) {
     return $result;
 }
 
+function displayStoreNameList($email, $storeName, $dateFrom, $dateTo) {
+    global $db;
+
+    //SQL select query
+    $sql = "SELECT spending_date, store_name, product_name, product_type, vat_rate,  price, note, currency_code, quantity
+    FROM user_spending
+    WHERE email = '$email'
+      AND store_name = '$storeName'
+      AND spending_date BETWEEN '$dateFrom' AND '$dateTo'";
+
+    //This enables me to query the database
+    $result = mysqli_query($db, $sql) or die (mysqli_error($db));
+
+    $file = fopen("/var/log/api_error_log/query.log", "w");
+
+    //Write the SQL query to the file
+    fwrite($file, $sql);
+
+    //Close the file
+    fclose($file);
+
+    //Return the result from the database
+    return $result;
+}
+
+function displayStoreNameList($email, $storeName, $dateFrom, $dateTo) {
+    global $db;
+
+    //SQL select query
+    $sql = "SELECT spending_date, store_name, product_name, product_type, vat_rate,  price, note, currency_code, quantity
+    FROM user_spending
+    WHERE email = '$email'
+      AND store_name = '$storeName'
+      AND spending_date BETWEEN '$dateFrom' AND '$dateTo'";
+
+    //This enables me to query the database
+    $result = mysqli_query($db, $sql) or die (mysqli_error($db));
+
+    $file = fopen("/var/log/api_error_log/query.log", "w");
+
+    //Write the SQL query to the file
+    fwrite($file, $sql);
+
+    //Close the file
+    fclose($file);
+
+    //Return the result from the database
+    return $result;
+}
+
 // function deleteData($id) {
 //     //Global Variable
 //     global $db;
