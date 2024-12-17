@@ -17,30 +17,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Check if all variables are set
     if (
         isset($_POST['email']) &&
-        isset($_POST['date']) &&
-        isset($_POST['store_name']) &&
-        isset($_POST['product_name']) &&
-        isset($_POST['product_type']) &&
-        isset($_POST['vat_rate']) &&
-        isset($_POST['price']) &&
+        isset($_POST['bank_name']) &&
+        isset($_POST['balance']) &&
         isset($_POST['note']) &&
-        isset($_POST['currency_code']) &&
-        isset($_POST['quantity'])
+        isset($_POST['currency_code'])
     ) {
         // Define the variables
         $email = $_POST['email'];
-        $date = $_POST['date'];
-        $storeName = $_POST['store_name'];
-        $productName = $_POST['product_name'];
-        $productType = $_POST['product_type'];
-        $vatRate = $_POST['vat_rate'];
-        $price = $_POST['price'];
+        $bankName = $_POST['bank_name'];
+        $balance = $_POST['balance'];
         $note = $_POST['note'];
         $currencyCode = $_POST['currency_code'];
-        $quantity = $_POST['quantity'];
 
         // Now call the insertData function from db_function.php
-        $result = spendingInsert($email, $date, $storeName, $productName, $productType, $vatRate, $price, $note, $currencyCode, $quantity);
+        $result = bankInsert($email, $bank_name, $balance, $note, $currency_code);
 
         // If the result variable returns true, then insert the user into the table in the database.
         if ($result) {

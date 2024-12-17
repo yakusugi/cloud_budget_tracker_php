@@ -1,5 +1,5 @@
 <?php
-require_once "budget_tracker_db_function.php";
+require_once "together_again_db_function.php";
 
 $response = array();
 
@@ -10,7 +10,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         // $password = hash('sha256', mysqli_real_escape_string($db, $_POST['password'])); // Hash the incoming password
         $result = loginToTheSystem($email, $password);
         if (mysqli_num_rows($result) > 0) {
-            $response['success'] = 1;
             $response['success'] = 1;
         } else {
             $response['success'] = 0;
